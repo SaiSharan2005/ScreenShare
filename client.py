@@ -5,7 +5,8 @@ import io
 import time
 
 # 🔗 Backend server URL (Update this for deployment)
-SERVER_URL = 'http://192.168.0.101:5000'
+# SERVER_URL = 'https://environmental-kaia-smartartificialintelegents-aa9419c7.koyeb.app'
+SERVER_URL = 'http://localhost:8000'
 
 # Create a Socket.IO client instance with WebSocket transport
 sio = socketio.Client(reconnection=True, reconnection_attempts=9999, reconnection_delay=3)

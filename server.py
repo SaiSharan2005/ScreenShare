@@ -1,12 +1,12 @@
 import os
 import time
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory, redirect, url_for
 from flask_socketio import SocketIO, emit, join_room
 from PIL import Image
 import base64
 import io
 
-# Initialize Flask & SocketIO with WebSocket only
+# Initialize Flask & SocketIO with WebSocket only (using default transport)
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -31,13 +31,39 @@ def set_mode():
     """ Change the mode dynamically via a GET request """
     global MODE
     new_mode = request.args.get("mode")
-
     if new_mode in ["live", "screenshot"]:
         MODE = new_mode
         print(f"✅ Mode changed to: {MODE.upper()}")
         return jsonify({"status": "success", "mode": MODE}), 200
     else:
         return jsonify({"status": "error", "message": "Invalid mode. Use 'live' or 'screenshot'"}), 400
+
+# Route to serve screenshot images
+@app.route("/screenshots/<path:filename>")
+def uploaded_file(filename):
+    return send_from_directory(SCREENSHOT_FOLDER, filename)
+
+# Gallery route: list all screenshots with a delete button for each
+@app.route("/gallery")
+def gallery():
+    images = os.listdir(SCREENSHOT_FOLDER)
+    # Optionally, sort images (e.g., newest first)
+    images.sort(reverse=True)
+    return render_template("gallery.html", images=images)
+
+# Route to delete an image; using POST to avoid accidental deletions
+@app.route("/delete_image", methods=["POST"])
+def delete_image():
+    filename = request.form.get("filename")
+    if filename:
+        file_path = os.path.join(SCREENSHOT_FOLDER, filename)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            print(f"✅ Deleted image: {filename}")
+            return jsonify({"status": "success"}), 200
+        else:
+            return jsonify({"status": "error", "message": "File not found"}), 404
+    return jsonify({"status": "error", "message": "No filename provided"}), 400
 
 @socketio.on('connect')
 def on_connect():
@@ -63,13 +89,13 @@ def handle_init(data):
 def handle_frame(data):
     """ Handles incoming frames from the client """
     global last_screenshot_time
-
     if MODE == "live":
-        emit("frame", data, room="viewers")  # Live streaming
-
+        # Live mode: broadcast the frame to all viewers
+        emit("frame", data, room="viewers")
     elif MODE == "screenshot":
+        # Screenshot mode: save one image every 60 seconds
         current_time = time.time()
-        if current_time - last_screenshot_time >= 60:  # Save every 60 sec
+        if current_time - last_screenshot_time >= 60:
             save_screenshot(data['image'])
             last_screenshot_time = current_time
 
