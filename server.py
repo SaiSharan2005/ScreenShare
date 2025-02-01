@@ -9,7 +9,7 @@ import io
 # Initialize Flask & SocketIO with WebSocket only
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app, cors_allowed_origins="*", logger=True, engineio_logger=True, async_mode="eventlet", transports=['websocket'])
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Default Mode
 MODE = "live"

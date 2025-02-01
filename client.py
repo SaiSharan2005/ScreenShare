@@ -5,10 +5,10 @@ import io
 import time
 
 # 🔗 Backend server URL (Update this for deployment)
-SERVER_URL = 'https://whoareyouman.pythonanywhere.com'
+SERVER_URL = 'http://192.168.0.101:5000'
 
 # Create a Socket.IO client instance with WebSocket transport
-sio = socketio.Client(reconnection=True, reconnection_attempts=9999, reconnection_delay=3, transports=['websocket'])
+sio = socketio.Client(reconnection=True, reconnection_attempts=9999, reconnection_delay=3)
 
 @sio.event
 def connect():
