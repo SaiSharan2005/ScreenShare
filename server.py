@@ -85,5 +85,5 @@ def save_screenshot(image_base64):
         print(f"❌ Error saving screenshot: {e}")
 
 if __name__ == "__main__":
-    print(f"🔥 Server running in {MODE.upper()} mode on http://0.0.0.0:5000")
-    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
+    print(f"🔥 Server running in {MODE.upper()} mode on http://0.0.0.0:8000")
+    socketio.run(app, host='0.0.0.0', port=8000, debug=True)
