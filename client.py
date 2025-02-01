@@ -5,10 +5,10 @@ import io
 import time
 
 # 🔗 Backend server URL (Update this for deployment)
-SERVER_URL = 'https://5c4b9f67-2a32-4b02-a72e-24d53bf2dabf-00-61c9q8hij8aj.sisko.replit.dev'
+SERVER_URL = 'https://whoareyouman.pythonanywhere.com'
 
-# Create a Socket.IO client instance with reconnection enabled
-sio = socketio.Client(reconnection=True, reconnection_attempts=9999, reconnection_delay=3)
+# Create a Socket.IO client instance with WebSocket transport
+sio = socketio.Client(reconnection=True, reconnection_attempts=9999, reconnection_delay=3, transports=['websocket'])
 
 @sio.event
 def connect():
@@ -27,7 +27,7 @@ def attempt_reconnect():
     while not sio.connected:
         try:
             print(f"🔄 Trying to reconnect... (Waiting {retry_delay}s)")
-            sio.connect(SERVER_URL, wait=True, transports=['polling'])  # 🔄 Force polling
+            sio.connect(SERVER_URL, wait=True, transports=['websocket'])  # 🔄 Force WebSocket
             print("✅ Reconnected successfully!")
             return
         except Exception as e:
