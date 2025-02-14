@@ -21,7 +21,7 @@ os.makedirs(SCREENSHOT_FOLDER, exist_ok=True)
 # Track last screenshot timestamp
 last_screenshot_time = 0
 
-@app.route("/")
+@app.route("/test")
 def index():
     """ Renders the main page """
     return render_template("index.html")
